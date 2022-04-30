@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='services',
-    version='0.0.8',
+    version='0.0.9',
     packages=find_packages(),
     install_requires=[
         'daos @ git+https://github.com/amirfounder/ml-studies-daos',
