@@ -1,11 +1,11 @@
 from datetime import datetime
-from typing import Dict
 
 import feedparser
 from daos import (
     RssEntrySource as RssSource,
-    RssEntryJsonFileIndexEntry as IndexEntry,
-    RssEntryJsonFile as File
+    RssEntryIndexEntry as IndexEntry,
+    RssEntryJsonFile as File,
+    RssFeedUrl as FeedUrl
 )
 
 source = next(iter(RssSource.all(name='cnn')), None)
@@ -17,28 +17,29 @@ if not source:
 SOURCE_ID = source.id
 
 
-def sync_rss_entries(topic_to_rss_url_map: Dict[str, str]):
-    topic_to_entries_map = {}
-    for topic, url in topic_to_rss_url_map.items():
+def index_latest_rss_feed_entries():
+    cnn_source = RssSource.get_or_create(name='cnn', return_list_if_one=False)
+    feed_urls = FeedUrl.all(source_id=cnn_source.id)
 
-        try:
-            entries = feedparser.parse(url).entries
-            topic_to_entries_map[topic] = entries
-
-        except Exception as e:
-            print(f'Exception occurred : {str(e)}')
+    topic_to_url_map = {feed_url.name: feed_url.url for feed_url in feed_urls}
+    topic_to_entries_map = {topic: feedparser.parse(url).entries for topic, url in topic_to_url_map.items()}
 
     for topic, rss_entries in topic_to_entries_map.items():
 
         try:
-            latest_rss_entries = [rss_entry for rss_entry in rss_entries]
-            latest_rss_entries_links = [e.get('link') for e in latest_rss_entries]
+            latest_rss_entries = []
+            for rss_entry in rss_entries:
+                rss_entry['link'] = rss_entry.get('link').split('?')[0]
+                if 'cnn.com' not in rss_entry.get('link'):
+                    continue
+                latest_rss_entries.append(rss_entry)
+            latest_rss_entries_urls = [e.get('link') for e in latest_rss_entries]
 
-            already_synced_index_entries_links = [e.link for e in IndexEntry.all(link=latest_rss_entries_links)]
+            already_synced_index_entries_urls = [e.url for e in IndexEntry.all(url=latest_rss_entries_urls)]
 
             not_synced_rss_entries = []
             for rss_entry in latest_rss_entries:
-                if rss_entry.get('link') not in already_synced_index_entries_links:
+                if rss_entry.get('link') not in already_synced_index_entries_urls:
                     not_synced_rss_entries.append(rss_entry)
 
             for rss_entry in not_synced_rss_entries:
@@ -50,8 +51,14 @@ def sync_rss_entries(topic_to_rss_url_map: Dict[str, str]):
                 index_entry.file_path = file.path
                 index_entry.source_id = SOURCE_ID
                 index_entry.retrieved_at = datetime.now()
-                index_entry.link = rss_entry.get('link')
+                index_entry.url = rss_entry.get('link')
                 index_entry.flush()
+
+            print(f'Successfully synced {len(not_synced_rss_entries)} new entries. Topic : {topic}')
 
         except Exception as e:
             print(f'Exception occurred : {str(e)}')
+
+
+if __name__ == '__main__':
+    index_latest_rss_feed_entries()

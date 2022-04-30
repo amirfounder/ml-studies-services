@@ -15,7 +15,7 @@ RSS_PREFIX = 'http://rss.cnn.com/rss/cnn_'
 RSS_PAGE_URL = 'https://www.cnn.com/services/rss/'
 
 
-def get_topic_to_rss_url_map():
+def scrape_rss_feeds_page():
     try:
         response = requests.get(RSS_PAGE_URL)
         response.raise_for_status()
@@ -32,7 +32,3 @@ def get_topic_to_rss_url_map():
 
     except Exception as e:
         print(f'Exception occurred : {str(e)}')
-
-
-if __name__ == '__main__':
-    get_topic_to_rss_url_map()
