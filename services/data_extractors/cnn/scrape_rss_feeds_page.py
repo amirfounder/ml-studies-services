@@ -15,7 +15,7 @@ RSS_PREFIX = 'http://rss.cnn.com/rss/cnn_'
 RSS_PAGE_URL = 'https://www.cnn.com/services/rss/'
 
 
-def scrape_rss_feeds_page():
+def scrape_cnn_rss_feeds_page():
     try:
         response = requests.get(RSS_PAGE_URL)
         response.raise_for_status()

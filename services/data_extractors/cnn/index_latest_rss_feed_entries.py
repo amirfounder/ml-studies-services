@@ -17,7 +17,7 @@ if not source:
 SOURCE_ID = source.id
 
 
-def index_latest_rss_feed_entries():
+def index_latest_cnn_rss_feed_entries():
     cnn_source = RssSource.get_or_create(name='cnn', return_list_if_one=False)
     feed_urls = FeedUrl.all(source_id=cnn_source.id)
 
@@ -58,7 +58,3 @@ def index_latest_rss_feed_entries():
 
         except Exception as e:
             print(f'Exception occurred : {str(e)}')
-
-
-if __name__ == '__main__':
-    index_latest_rss_feed_entries()
