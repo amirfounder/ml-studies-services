@@ -8,4 +8,5 @@ setup(
         'daos @ git+https://github.com/amirfounder/ml-studies-daos',
         'feedparser>=6.0.8',
         'bs4>=0.0.1',
+        'requests==2.27.1'
     ])
