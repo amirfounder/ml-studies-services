@@ -18,6 +18,8 @@ SOURCE_ID = source.id
 
 
 def index_latest_cnn_rss_feed_entries():
+    report = {'new_entries_synced': {}}
+
     cnn_source = RssSource.get_or_create(name='cnn', return_list_if_one=False)
     feed_urls = FeedUrl.all(source_id=cnn_source.id)
 
@@ -54,7 +56,9 @@ def index_latest_cnn_rss_feed_entries():
                 index_entry.url = rss_entry.get('link')
                 index_entry.flush()
 
-            print(f'Successfully synced {len(not_synced_rss_entries)} new entries. Topic : {topic}')
+            report['new_entries_synced'][topic] = len(not_synced_rss_entries)
 
         except Exception as e:
             print(f'Exception occurred : {str(e)}')
+
+    return report

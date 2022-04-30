@@ -16,6 +16,8 @@ RSS_PAGE_URL = 'https://www.cnn.com/services/rss/'
 
 
 def scrape_cnn_rss_feeds_page():
+    report = {'successes': 0}
+
     try:
         response = requests.get(RSS_PAGE_URL)
         response.raise_for_status()
@@ -28,7 +30,15 @@ def scrape_cnn_rss_feeds_page():
 
         for url in valid_urls:
             topic = url[len(RSS_PREFIX):].removesuffix('.rss')
-            RssFeedUrl.get_or_create(name=topic, source_id=SOURCE_ID, url=url, return_list_if_one=False)
+            RssFeedUrl.get_or_create(
+                name=topic,
+                source_id=SOURCE_ID,
+                url=url,
+            )
+
+            report['successes'] += 1
+
+        return report
 
     except Exception as e:
         print(f'Exception occurred : {str(e)}')
