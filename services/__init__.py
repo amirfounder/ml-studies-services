@@ -4,7 +4,7 @@ from .data_extractors import *
 
 SERVICES = []
 
-values = globals().values()
+values = list(globals().values())
 
 for value in values:
     if callable(value) and value not in SERVICES:
