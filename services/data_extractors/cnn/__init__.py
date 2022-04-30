@@ -1,2 +1,3 @@
 from .index_latest_rss_feed_entries import index_latest_cnn_rss_feed_entries
 from .scrape_rss_feeds_page import scrape_cnn_rss_feeds_page
+from .scrape_latest_articles import scrape_latest_cnn_articles
