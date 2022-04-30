@@ -28,8 +28,11 @@ def get_topic_to_rss_url_map():
 
         for url in valid_urls:
             topic = url[len(RSS_PREFIX):].removesuffix('.rss')
-            feed_url = RssFeedUrl(name=topic, source_id=SOURCE_ID, url=url)
-            feed_url.flush()
+            RssFeedUrl.get_or_create(name=topic, source_id=SOURCE_ID, url=url, return_list_if_one=False)
 
     except Exception as e:
         print(f'Exception occurred : {str(e)}')
+
+
+if __name__ == '__main__':
+    get_topic_to_rss_url_map()
