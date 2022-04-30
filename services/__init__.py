@@ -4,6 +4,6 @@ from .data_extractors import *
 
 SERVICES = []
 
-for name, variable in globals().items():
-    if isinstance(variable, Callable) and variable not in SERVICES:
-        SERVICES.append(variable)
+for value in globals().values():
+    if callable(value) and value not in SERVICES:
+        SERVICES.append(value)
