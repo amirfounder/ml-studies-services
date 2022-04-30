@@ -14,9 +14,6 @@ if not source:
     source.flush()
 
 
-RssSource.get_or_create(name='cnn')
-
-
 SOURCE_ID = source.id
 
 
